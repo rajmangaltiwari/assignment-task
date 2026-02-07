@@ -6,15 +6,27 @@ interface SkillsSectionProps {
   skills: string[];
   onSkillsUpdate: (skills: string[]) => void;
   apiBase: string;
+  user?: any;
+  navigate?: any;
 }
 
 export default function SkillsSection({
   skills,
   onSkillsUpdate,
   apiBase,
+  user,
+  navigate,
 }: SkillsSectionProps) {
   const [editingSkills, setEditingSkills] = useState(false);
   const [newSkill, setNewSkill] = useState("");
+
+  const handleEditClick = () => {
+    if (!user) {
+      navigate?.("/login");
+      return;
+    }
+    setEditingSkills(!editingSkills);
+  };
 
   const handleAddSkill = async () => {
     if (!newSkill.trim()) return;
@@ -50,7 +62,7 @@ export default function SkillsSection({
           Skills
         </h2>
         <button
-          onClick={() => setEditingSkills(!editingSkills)}
+          onClick={handleEditClick}
           style={{
             background: "#333",
             color: "white",

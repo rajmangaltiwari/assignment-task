@@ -17,6 +17,8 @@ interface ProjectsSectionProps {
   onProjectsUpdate: (projects: Project[]) => void;
   onFilteredProjectsUpdate: (projects: Project[]) => void;
   apiBase: string;
+  user?: any;
+  navigate?: any;
 }
 
 const initialProjectState = {
@@ -31,10 +33,20 @@ export default function ProjectsSection({
   onProjectsUpdate,
   onFilteredProjectsUpdate,
   apiBase,
+  user,
+  navigate,
 }: ProjectsSectionProps) {
   const [addingProject, setAddingProject] = useState(false);
   const [newProject, setNewProject] = useState(initialProjectState);
   const [newProjectSkill, setNewProjectSkill] = useState("");
+
+  const handleAddProjectClick = () => {
+    if (!user) {
+      navigate?.("/login");
+      return;
+    }
+    setAddingProject(!addingProject);
+  };
 
   const handleAddProject = async () => {
     if (!newProject.title.trim() || !newProject.description.trim()) {
@@ -60,6 +72,10 @@ export default function ProjectsSection({
   };
 
   const handleDeleteProject = async (projectId?: string) => {
+    if (!user) {
+      navigate?.("/login");
+      return;
+    }
     if (!projectId) return;
     try {
       const res = await axios.delete(`${apiBase}/projects/${projectId}`);
@@ -82,7 +98,7 @@ export default function ProjectsSection({
       >
         Projects
         <button
-          onClick={() => setAddingProject(!addingProject)}
+          onClick={handleAddProjectClick}
           style={{
             background: "#333",
             color: "white",
