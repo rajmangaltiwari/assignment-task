@@ -6,6 +6,8 @@ require("dotenv").config();
 const Profile = require("./models/Profile");
 const projectController = require("./controllers/projectController");
 const profileController = require("./controllers/profileController");
+const userController = require("./controllers/userController");
+const authenticateToken = require("./middleware/authenticateToken");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,6 +26,16 @@ mongoose
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", uptime: process.uptime() });
 });
+
+// Authentication Routes
+// POST /api/auth/signup - Register new user
+app.post("/api/auth/signup", userController.signup);
+
+// POST /api/auth/login - Login user
+app.post("/api/auth/login", userController.login);
+
+// GET /api/auth/me - Get current user (protected)
+app.get("/api/auth/me", authenticateToken, userController.getCurrentUser);
 
 // Profile Routes
 // GET /api/profile - Get profile data
