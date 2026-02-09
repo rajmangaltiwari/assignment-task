@@ -3,7 +3,7 @@ const Profile = require("../models/Profile");
 // GET all skills
 exports.getSkills = async (req, res) => {
   try {
-    const profile = await Profile.findOne();
+    const profile = await Profile.findOne().lean();
     if (!profile) return res.status(404).json({ message: "Profile not found" });
     res.json(profile.skills);
   } catch (err) {
@@ -14,7 +14,7 @@ exports.getSkills = async (req, res) => {
 // GET top 5 skills
 exports.getTopSkills = async (req, res) => {
   try {
-    const profile = await Profile.findOne();
+    const profile = await Profile.findOne().lean();
     if (!profile) return res.status(404).json({ message: "Profile not found" });
     res.json(profile.skills.slice(0, 5));
   } catch (err) {
@@ -76,7 +76,7 @@ exports.updateProfile = async (req, res) => {
 // GET profile
 exports.getProfile = async (req, res) => {
   try {
-    const profile = await Profile.findOne();
+    const profile = await Profile.findOne().lean();
     if (!profile) return res.status(404).json({ message: "Profile not found" });
     res.json(profile);
   } catch (err) {
@@ -88,7 +88,7 @@ exports.getProfile = async (req, res) => {
 exports.searchProfile = async (req, res) => {
   const { q } = req.query;
   try {
-    const profile = await Profile.findOne();
+    const profile = await Profile.findOne().lean();
     if (!profile) return res.status(404).json({ message: "Profile not found" });
 
     if (!q) return res.json(profile);

@@ -41,6 +41,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
@@ -65,18 +66,20 @@ function App() {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/profile`);
+      const res = await axios.get(`${API_BASE}/profile`, {
+        timeout: 10000, // 10 second timeout
+      });
       setProfile(res.data);
       setFilteredProjects(res.data.projects);
       setLoading(false);
     } catch (err) {
       console.error("Error fetching profile:", err);
+      setError(true);
       setLoading(false);
     }
   };
 
-  if (loading) return <div className="loading">Loading Profile...</div>;
-  if (!profile)
+  if (error)
     return (
       <div className="error">
         Profile not found. Make sure backend is running and seeded.
@@ -189,66 +192,98 @@ function App() {
       </nav>
 
       {/* Header */}
-      <header className="header">
-        <div>
-          <h1>{profile.name}</h1>
-          <p style={{ color: "#666" }}>{profile.email}</p>
+      {profile ? (
+        <header className="header">
+          <div>
+            <h1>{profile.name}</h1>
+            <p style={{ color: "#666" }}>{profile.email}</p>
+          </div>
+          <div style={{ display: "flex", gap: "16px" }}>
+            {profile.links.github && (
+              <a href={profile.links.github} target="_blank" rel="noreferrer">
+                <Github size={24} color="black" />
+              </a>
+            )}
+            {profile.links.linkedin && (
+              <a href={profile.links.linkedin} target="_blank" rel="noreferrer">
+                <Linkedin size={24} color="black" />
+              </a>
+            )}
+            {profile.links.portfolio && (
+              <a href={profile.links.portfolio} target="_blank" rel="noreferrer">
+                <Globe size={24} color="black" />
+              </a>
+            )}
+          </div>
+        </header>
+      ) : (
+        <div style={{ padding: "20px", background: "#f5f5f5", borderRadius: "8px", marginBottom: "20px" }}>
+          <p style={{ color: "#999" }}>Loading profile...</p>
         </div>
-        <div style={{ display: "flex", gap: "16px" }}>
-          {profile.links.github && (
-            <a href={profile.links.github} target="_blank" rel="noreferrer">
-              <Github size={24} color="black" />
-            </a>
-          )}
-          {profile.links.linkedin && (
-            <a href={profile.links.linkedin} target="_blank" rel="noreferrer">
-              <Linkedin size={24} color="black" />
-            </a>
-          )}
-          {profile.links.portfolio && (
-            <a href={profile.links.portfolio} target="_blank" rel="noreferrer">
-              <Globe size={24} color="black" />
-            </a>
-          )}
-        </div>
-      </header>
+      )}
 
       {/* Education Section */}
-      <EducationSection education={profile.education} />
+      {profile ? (
+        <EducationSection education={profile.education} />
+      ) : (
+        <div style={{ padding: "20px", background: "#f5f5f5", borderRadius: "8px", marginBottom: "20px" }}>
+          <p style={{ color: "#999" }}>Loading education...</p>
+        </div>
+      )}
 
       {/* Skills Section */}
-      <SkillsSection
-        skills={profile.skills}
-        onSkillsUpdate={(skills) => setProfile({ ...profile, skills })}
-        apiBase={API_BASE}
-        user={user}
-        navigate={navigate}
-      />
+      {profile ? (
+        <SkillsSection
+          skills={profile.skills}
+          onSkillsUpdate={(skills) => setProfile({ ...profile, skills })}
+          apiBase={API_BASE}
+          user={user}
+          navigate={navigate}
+        />
+      ) : (
+        <div style={{ padding: "20px", background: "#f5f5f5", borderRadius: "8px", marginBottom: "20px" }}>
+          <p style={{ color: "#999" }}>Loading skills...</p>
+        </div>
+      )}
 
       {/* Search Bar */}
-      <SearchBar
-        searchTerm={searchTerm}
-        onSearchTermChange={setSearchTerm}
-        onSearch={() => {}}
-        projects={profile.projects}
-        onFilteredProjectsUpdate={setFilteredProjects}
-        apiBase={API_BASE}
-      />
+      {profile ? (
+        <SearchBar
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
+          onSearch={() => {}}
+          projects={profile.projects}
+          onFilteredProjectsUpdate={setFilteredProjects}
+          apiBase={API_BASE}
+        />
+      ) : null}
 
       {/* Projects Section */}
-      <ProjectsSection
-        projects={profile.projects}
-        searchTerm={searchTerm}
-        filteredProjects={filteredProjects}
-        onProjectsUpdate={(projects) => setProfile({ ...profile, projects })}
-        onFilteredProjectsUpdate={setFilteredProjects}
-        apiBase={API_BASE}
-        user={user}
-        navigate={navigate}
-      />
+      {profile ? (
+        <ProjectsSection
+          projects={profile.projects}
+          searchTerm={searchTerm}
+          filteredProjects={filteredProjects}
+          onProjectsUpdate={(projects) => setProfile({ ...profile, projects })}
+          onFilteredProjectsUpdate={setFilteredProjects}
+          apiBase={API_BASE}
+          user={user}
+          navigate={navigate}
+        />
+      ) : (
+        <div style={{ padding: "20px", background: "#f5f5f5", borderRadius: "8px", marginBottom: "20px" }}>
+          <p style={{ color: "#999" }}>Loading projects...</p>
+        </div>
+      )}
 
       {/* Work Experience Section */}
-      <WorkExperienceSection work={profile.work} />
+      {profile ? (
+        <WorkExperienceSection work={profile.work} />
+      ) : (
+        <div style={{ padding: "20px", background: "#f5f5f5", borderRadius: "8px", marginBottom: "20px" }}>
+          <p style={{ color: "#999" }}>Loading work experience...</p>
+        </div>
+      )}
     </div>
   );
 }

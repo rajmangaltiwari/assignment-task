@@ -34,4 +34,7 @@ const ProfileSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Add indexes for faster queries
+ProfileSchema.index({ email: 1 });
+
 module.exports = mongoose.model("Profile", ProfileSchema);
