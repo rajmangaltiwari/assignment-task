@@ -40,7 +40,6 @@ function App() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
@@ -71,11 +70,9 @@ function App() {
       });
       setProfile(res.data);
       setFilteredProjects(res.data.projects);
-      setLoading(false);
     } catch (err) {
       console.error("Error fetching profile:", err);
       setError(true);
-      setLoading(false);
     }
   };
 
