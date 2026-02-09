@@ -66,12 +66,17 @@ function App() {
   const fetchProfile = async () => {
     try {
       const res = await axios.get(`${API_BASE}/profile`, {
-        timeout: 10000, // 10 second timeout
+        timeout: 60000, // 60 second timeout for initial load with seeding
       });
       setProfile(res.data);
       setFilteredProjects(res.data.projects);
     } catch (err) {
       console.error("Error fetching profile:", err);
+      if (axios.isAxiosError(err)) {
+        console.error("Status:", err.response?.status);
+        console.error("Response:", err.response?.data);
+        console.error("URL attempted:", `${API_BASE}/profile`);
+      }
       setError(true);
     }
   };
